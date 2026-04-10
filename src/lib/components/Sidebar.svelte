@@ -22,22 +22,9 @@
 		{/each}
 	</ul>
 
-	<div class="sidebar-footer">
-		<!-- Subtle motorcycle doodle -->
-		<svg width="64" height="40" viewBox="0 0 64 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-			<g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-				<circle cx="12" cy="30" r="8" />
-				<circle cx="12" cy="30" r="3" stroke-width="0.8" />
-				<circle cx="50" cy="30" r="8" />
-				<circle cx="50" cy="30" r="3" stroke-width="0.8" />
-				<path d="M20 30 L27 14 L44 10 L50 22" />
-				<ellipse cx="34" cy="12" rx="7" ry="4" stroke-width="1.4" />
-				<path d="M25 14 L21 18" />
-				<path d="M44 10 L48 3 L52 3" />
-				<circle cx="52" cy="7" r="2.2" />
-				<path d="M17 26 L9 24" stroke-width="1.8" />
-			</g>
-		</svg>
+	<div class="sidebar-section">
+		<div class="section-label">Biking Journal</div>
+		<span class="coming-soon">coming soon</span>
 	</div>
 </nav>
 
@@ -86,14 +73,26 @@
 		flex: 1;
 	}
 
-	.sidebar-footer {
-		padding: 16px 20px;
-		border-top: 1px solid var(--border);
-		display: flex;
-		justify-content: center;
-		color: var(--text-muted);
-		opacity: 0.2;
+
+	.sidebar-section {
+		padding: 14px 18px;
+		border-top: 2px solid var(--border);
 		flex-shrink: 0;
+	}
+
+	.section-label {
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		color: var(--accent);
+		margin-bottom: 4px;
+	}
+
+	.coming-soon {
+		font-size: 11px;
+		color: var(--text-muted);
+		font-style: italic;
 	}
 
 	.sidebar-backdrop {

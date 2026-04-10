@@ -19,8 +19,8 @@ Thumbs.db
 !.env.example
 !.env.test
 
-# Content (populated by CI from vault)
-/content
+# Content (notes populated by CI from vault, rides committed manually)
+/content/notes
 
 # Vite
 vite.config.js.timestamp-*

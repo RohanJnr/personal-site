@@ -6,6 +6,7 @@ import { EXCLUDE_PATTERNS } from '$lib/config.js';
 import type { NoteMetadata, Note, FolderTreeEntry } from '$lib/types.js';
 
 const CONTENT_DIR = process.env.CONTENT_DIR ?? path.resolve('content/notes');
+const RIDES_DIR = path.resolve('content/rides');
 
 // ── Slug helpers ──────────────────────────────────────────────────────────────
 
@@ -22,19 +23,31 @@ function slugToPath(slug: string): string {
 
 // ── File walker ───────────────────────────────────────────────────────────────
 
-function walkDir(dir: string): string[] {
+function walkDir(dir: string, baseDir: string): string[] {
+	if (!fs.existsSync(dir)) return [];
 	const results: string[] = [];
 	for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
 		const fullPath = path.join(dir, entry.name);
-		const relPath = path.relative(CONTENT_DIR, fullPath);
+		const relPath = path.relative(baseDir, fullPath);
 
 		if (EXCLUDE_PATTERNS.some((p) => p.test(relPath) || p.test(entry.name))) continue;
 
 		if (entry.isDirectory()) {
-			results.push(...walkDir(fullPath));
+			results.push(...walkDir(fullPath, baseDir));
 		} else if (entry.isFile() && entry.name.endsWith('.md')) {
 			results.push(fullPath);
 		}
+	}
+	return results;
+}
+
+function walkAllDirs(): { filePath: string; baseDir: string }[] {
+	const results: { filePath: string; baseDir: string }[] = [];
+	for (const f of walkDir(CONTENT_DIR, CONTENT_DIR)) {
+		results.push({ filePath: f, baseDir: CONTENT_DIR });
+	}
+	for (const f of walkDir(RIDES_DIR, RIDES_DIR)) {
+		results.push({ filePath: f, baseDir: RIDES_DIR });
 	}
 	return results;
 }
@@ -61,7 +74,7 @@ function extractTitle(frontmatter: Record<string, unknown>, filePath: string): s
 
 // ── Tags extraction ───────────────────────────────────────────────────────────
 
-function extractTags(frontmatter: Record<string, unknown>, relPath: string): string[] {
+function extractTags(frontmatter: Record<string, unknown>, relPath: string, content: string): string[] {
 	const tags: string[] = [];
 
 	// Tags from frontmatter
@@ -69,6 +82,16 @@ function extractTags(frontmatter: Record<string, unknown>, relPath: string): str
 		tags.push(...frontmatter.tags.filter((t): t is string => typeof t === 'string'));
 	} else if (typeof frontmatter.tags === 'string') {
 		tags.push(frontmatter.tags);
+	}
+
+	// Inline #tags from note body (Obsidian style)
+	const inlineTagRegex = /(?:^|\s)#([a-zA-Z][\w-/]*)/g;
+	let match;
+	while ((match = inlineTagRegex.exec(content)) !== null) {
+		const tag = match[1];
+		if (!tags.includes(tag)) {
+			tags.push(tag);
+		}
 	}
 
 	// Top-level folder as implicit tag
@@ -87,8 +110,8 @@ let _slugMap: Map<string, string> | null = null;
 function getSlugMap(): Map<string, string> {
 	if (_slugMap) return _slugMap;
 	_slugMap = new Map();
-	for (const filePath of walkDir(CONTENT_DIR)) {
-		const relPath = path.relative(CONTENT_DIR, filePath);
+	for (const { filePath, baseDir } of walkAllDirs()) {
+		const relPath = path.relative(baseDir, filePath);
 		const slug = pathToSlug(relPath);
 		const title = path.basename(filePath, '.md').toLowerCase();
 		_slugMap.set(title, slug);
@@ -105,17 +128,17 @@ let _allNotes: NoteMetadata[] | null = null;
 export function getAllNotes(): NoteMetadata[] {
 	if (_allNotes) return _allNotes;
 
-	const files = walkDir(CONTENT_DIR);
-	const notes: NoteMetadata[] = files.map((filePath) => {
-		const relPath = path.relative(CONTENT_DIR, filePath);
+	const entries = walkAllDirs();
+	const notes: NoteMetadata[] = entries.map(({ filePath, baseDir }) => {
+		const relPath = path.relative(baseDir, filePath);
 		const raw = fs.readFileSync(filePath, 'utf-8');
-		const { data } = matter(raw);
+		const { data, content } = matter(raw);
 
 		return {
 			slug: pathToSlug(relPath),
 			title: extractTitle(data, filePath),
 			date: extractDate(data, filePath),
-			tags: extractTags(data, relPath),
+			tags: extractTags(data, relPath, content),
 			folder: relPath.split(path.sep)[0],
 			filePath
 		};
@@ -131,22 +154,32 @@ export function getAllNotes(): NoteMetadata[] {
 
 export async function getNoteBySlug(slug: string): Promise<Note | null> {
 	const relPath = slugToPath(slug);
-	const filePath = path.join(CONTENT_DIR, relPath);
 
-	if (!fs.existsSync(filePath)) return null;
+	let filePath: string | null = null;
+	let baseDir: string = CONTENT_DIR;
+	for (const dir of [CONTENT_DIR, RIDES_DIR]) {
+		const candidate = path.join(dir, relPath);
+		if (fs.existsSync(candidate)) {
+			filePath = candidate;
+			baseDir = dir;
+			break;
+		}
+	}
+
+	if (!filePath) return null;
 
 	const raw = fs.readFileSync(filePath, 'utf-8');
 	const { data, content } = matter(raw);
 	const slugMap = getSlugMap();
 	const { html, plainText } = await processMarkdown(content, slugMap);
 
-	const noteRelPath = path.relative(CONTENT_DIR, filePath);
+	const noteRelPath = path.relative(baseDir, filePath);
 
 	return {
 		slug,
 		title: extractTitle(data, filePath),
 		date: extractDate(data, filePath),
-		tags: extractTags(data, noteRelPath),
+		tags: extractTags(data, noteRelPath, content),
 		folder: noteRelPath.split(path.sep)[0],
 		filePath,
 		html,
