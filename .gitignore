@@ -1,0 +1,27 @@
+node_modules
+.claude
+
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Content (populated by CI from vault)
+/content
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*

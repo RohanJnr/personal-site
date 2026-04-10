@@ -1,0 +1,250 @@
+/* =============================================
+   Hand-drawn theme — Layout A
+   ============================================= */
+
+:root {
+	--bg: #faf8f4;
+	--bg-surface: #f5f0e8;
+	--bg-sidebar: #f0ebe2;
+	--text: #2d2a26;
+	--text-muted: #7a7468;
+	--accent: #d45a28;
+	--accent-hover: #e06830;
+	--accent-light: #f8e8df;
+	--heading: #1a1816;
+	--border: #d4cbbe;
+	--border-strong: #b8a898;
+
+	--font-body: 'Inter', -apple-system, sans-serif;
+	--font-display: 'Playfair Display', Georgia, serif;
+	--font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+	--sidebar-width: 250px;
+}
+
+*, *::before, *::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	font-size: 15px;
+}
+
+body {
+	font-family: var(--font-body);
+	background: var(--bg);
+	color: var(--text);
+	line-height: 1.7;
+	-webkit-font-smoothing: antialiased;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+/* =============================================
+   Note content typography
+   ============================================= */
+
+.note-content {
+	font-size: 15px;
+	line-height: 1.8;
+}
+
+.note-content h1 {
+	font-family: var(--font-display);
+	font-size: 2rem;
+	font-weight: 900;
+	color: var(--heading);
+	margin: 0 0 0.25em;
+	line-height: 1.2;
+}
+
+.note-content h2 {
+	font-family: var(--font-display);
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: var(--heading);
+	margin: 2em 0 0.5em;
+	padding-bottom: 0.25em;
+	border-bottom: 2px dashed var(--border);
+}
+
+.note-content h3 {
+	font-family: var(--font-display);
+	font-size: 1.2rem;
+	font-weight: 700;
+	color: var(--heading);
+	margin: 1.5em 0 0.4em;
+}
+
+.note-content h4, .note-content h5, .note-content h6 {
+	font-weight: 600;
+	color: var(--heading);
+	margin: 1.2em 0 0.3em;
+}
+
+.note-content p {
+	margin-bottom: 1em;
+}
+
+.note-content a {
+	color: var(--accent);
+	border-bottom: 1.5px solid var(--accent-light);
+	transition: border-color 0.15s;
+}
+
+.note-content a:hover {
+	border-bottom-color: var(--accent);
+}
+
+.note-content ul, .note-content ol {
+	margin: 0.5em 0 1em 1.5em;
+}
+
+.note-content li {
+	margin-bottom: 0.25em;
+}
+
+.note-content blockquote {
+	border-left: 3px solid var(--border-strong);
+	padding: 0.5em 1em;
+	margin: 1em 0;
+	color: var(--text-muted);
+	background: var(--bg-surface);
+}
+
+.note-content code {
+	font-family: var(--font-mono);
+	font-size: 0.88em;
+	background: var(--bg-surface);
+	padding: 0.15em 0.4em;
+	border-radius: 4px;
+	border: 1px solid var(--border);
+}
+
+.note-content pre {
+	background: var(--heading);
+	color: #e8e0d4;
+	padding: 1.25em 1.5em;
+	border-radius: 6px;
+	overflow-x: auto;
+	margin: 1.25em 0;
+	transform: rotate(-0.15deg);
+}
+
+.note-content pre code {
+	background: none;
+	border: none;
+	padding: 0;
+	color: inherit;
+	font-size: 0.9em;
+}
+
+.note-content hr {
+	border: none;
+	border-top: 2px dashed var(--border);
+	margin: 2em 0;
+}
+
+.note-content table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 1em 0;
+	font-size: 0.92em;
+}
+
+.note-content th {
+	background: var(--bg-surface);
+	font-weight: 600;
+	text-align: left;
+	padding: 0.5em 0.75em;
+	border: 1px solid var(--border);
+}
+
+.note-content td {
+	padding: 0.45em 0.75em;
+	border: 1px solid var(--border);
+}
+
+.note-content tr:nth-child(even) td {
+	background: var(--bg-surface);
+}
+
+.note-content img {
+	max-width: 100%;
+	border-radius: 4px;
+	margin: 0.5em 0;
+}
+
+/* =============================================
+   Callout blocks (Obsidian style)
+   ============================================= */
+
+.callout {
+	padding: 1em 1.25em;
+	margin: 1.25em 0;
+	border-radius: 4px;
+	border: 1.5px solid var(--border);
+	border-left: 4px solid var(--accent);
+	background: #fff;
+	transform: rotate(0.15deg);
+}
+
+.callout-title {
+	font-family: var(--font-display);
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: var(--accent);
+	margin-bottom: 0.4em;
+	text-transform: capitalize;
+}
+
+.callout-info    { border-left-color: #4a7fbf; }
+.callout-info .callout-title { color: #4a7fbf; }
+
+.callout-warning { border-left-color: #c49a28; }
+.callout-warning .callout-title { color: #c49a28; }
+
+.callout-success { border-left-color: #4a8c5c; }
+.callout-success .callout-title { color: #4a8c5c; }
+
+.callout-danger, .callout-error {
+	border-left-color: #c44a4a;
+}
+.callout-danger .callout-title, .callout-error .callout-title {
+	color: #c44a4a;
+}
+
+/* =============================================
+   Syntax highlighting — warm dark theme
+   ============================================= */
+
+.note-content pre .hljs-keyword  { color: #e8a06a; }
+.note-content pre .hljs-string   { color: #a8d8a8; }
+.note-content pre .hljs-comment  { color: #7a7060; font-style: italic; }
+.note-content pre .hljs-number   { color: #d4c87a; }
+.note-content pre .hljs-function { color: #d4a8d4; }
+.note-content pre .hljs-type     { color: #80c8e0; }
+.note-content pre .hljs-built_in { color: #e8c87a; }
+.note-content pre .hljs-variable { color: #e8e0d4; }
+.note-content pre .hljs-title    { color: #d4c8a0; font-weight: 600; }
+
+/* =============================================
+   Mobile responsive
+   ============================================= */
+
+@media (max-width: 768px) {
+	.note-content pre {
+		padding: 1em;
+		font-size: 13px;
+	}
+
+	.note-content table {
+		display: block;
+		overflow-x: auto;
+	}
+}

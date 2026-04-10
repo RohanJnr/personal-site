@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layout B: Card Grid + Rides Shelf</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #faf8f4;
+    --bg-surface: #f5f0e8;
+    --bg-sidebar: #f0ebe2;
+    --text: #2d2a26;
+    --text-muted: #7a7468;
+    --accent: #d45a28;
+    --accent-light: #f8e8df;
+    --heading: #1a1816;
+    --border: #d4cbbe;
+    --green: #4a8c5c;
+    --blue: #4a6f8c;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 15px;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--bg-sidebar);
+    border-right: 2px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-header {
+    padding: 24px 20px 20px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-family: 'Caveat', cursive;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .site-info { flex: 1; }
+  .site-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--heading);
+  }
+  .site-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .nav-section {
+    padding: 14px 16px 6px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  .folder-tree { list-style: none; padding: 0 8px; }
+
+  .folder-name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 5px;
+  }
+  .folder-name:hover { background: rgba(0,0,0,0.03); color: var(--text); }
+
+  .note-link {
+    display: block;
+    padding: 3px 10px 3px 28px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 13px;
+    border-radius: 5px;
+  }
+  .note-link:hover { background: var(--accent-light); color: var(--accent); }
+  .note-link.active { background: var(--accent-light); color: var(--accent); font-weight: 500; }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    opacity: 0.2;
+  }
+
+  /* MAIN */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 36px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+  }
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    color: var(--text-muted);
+    font-size: 13px;
+    cursor: pointer;
+    min-width: 220px;
+  }
+  .search-bar:hover { border-color: var(--accent); }
+  .search-bar kbd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+    margin-left: auto;
+  }
+
+  .content { padding: 28px 36px; max-width: 900px; }
+
+  /* INTRO - one liner */
+  .intro {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .intro h1 {
+    font-family: 'Caveat', cursive;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--heading);
+    white-space: nowrap;
+  }
+
+  .intro p {
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .intro a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* SECTION HEADERS */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .section-link {
+    font-size: 12px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* TECH NOTES GRID */
+  .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  .card {
+    display: block;
+    padding: 16px;
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.15s;
+  }
+
+  .card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  }
+
+  .card-date {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .card-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--heading);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+
+  .card-snippet {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-tags {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .tag {
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 500;
+    background: var(--accent-light);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+
+  .card-folder {
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--bg-surface);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+
+  /* RIDES SHELF - horizontal scroll */
+  .rides-shelf {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 36px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .rides-shelf::-webkit-scrollbar { height: 4px; }
+  .rides-shelf::-webkit-scrollbar-track { background: var(--bg-surface); border-radius: 2px; }
+  .rides-shelf::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .ride-card {
+    flex: 0 0 260px;
+    scroll-snap-align: start;
+    padding: 16px;
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ride-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  }
+
+  .ride-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), #e8a060);
+  }
+
+  .ride-bike-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+
+  .badge-cb { background: #e8f0e8; color: var(--green); }
+  .badge-ktm { background: #fef0e8; color: var(--accent); }
+
+  .ride-title {
+    font-family: 'Caveat', cursive;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: 4px;
+  }
+
+  .ride-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .ride-snippet {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* PROJECTS SECTION */
+  .projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .project-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.15s;
+  }
+
+  .project-item:hover {
+    border-color: var(--accent);
+  }
+
+  .project-icon {
+    width: 28px;
+    height: 28px;
+    background: var(--bg-surface);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .project-info { flex: 1; }
+
+  .project-name {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--heading);
+  }
+
+  .project-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .project-updated {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-mark">R</div>
+      <div class="site-info">
+        <div class="site-name">Rohan's Notes</div>
+        <div class="site-desc">code & rides</div>
+      </div>
+    </div>
+    <div class="nav-section">Folders</div>
+    <ul class="folder-tree">
+      <li>
+        <div class="folder-name">&#9662; tech</div>
+        <ul class="folder-tree">
+          <li><a href="#" class="note-link">Rust Ownership</a></li>
+          <li><a href="#" class="note-link">Docker Compose Tips</a></li>
+          <li><a href="#" class="note-link active">SvelteKit SSG</a></li>
+          <li><a href="#" class="note-link">Nix Flakes Intro</a></li>
+        </ul>
+      </li>
+      <li>
+        <div class="folder-name">&#9662; projects</div>
+        <ul class="folder-tree">
+          <li><a href="#" class="note-link">GPS Ride Logger</a></li>
+          <li><a href="#" class="note-link">Home Server</a></li>
+        </ul>
+      </li>
+      <li><div class="folder-name">&#9656; reading</div></li>
+      <li><div class="folder-name">&#9656; recipes</div></li>
+      <li>
+        <div class="folder-name">&#9662; rides</div>
+        <ul class="folder-tree">
+          <li><a href="#" class="note-link">Munnar Loop</a></li>
+          <li><a href="#" class="note-link">Coorg Weekend</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="sidebar-footer">
+      <svg width="70" height="40" viewBox="0 0 70 40" xmlns="http://www.w3.org/2000/svg">
+        <g fill="none" stroke="#2d2a26" stroke-width="1.3" stroke-linecap="round">
+          <circle cx="12" cy="28" r="8"/>
+          <circle cx="54" cy="28" r="8"/>
+          <path d="M20 28 L28 14 L48 10 L54 20"/>
+          <ellipse cx="36" cy="12" rx="6" ry="3.5"/>
+          <path d="M26 14 L22 18"/>
+          <path d="M48 10 L52 4 L56 4"/>
+          <circle cx="56" cy="8" r="2"/>
+        </g>
+      </svg>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="header">
+      <div style="font-size: 13px; color: var(--text-muted);">Home</div>
+      <div class="search-bar">&#128270; Search all notes... <kbd>Ctrl+K</kbd></div>
+    </div>
+
+    <div class="content">
+      <div class="intro">
+        <h1>Rohan's Notes</h1>
+        <p>Software engineer. Daily notes on things I learn. Sometimes I write about <a href="#">riding motorcycles</a> too.</p>
+      </div>
+
+      <!-- Recent Tech Notes -->
+      <div class="section-header">
+        <div class="section-title">Recent notes</div>
+        <a href="#" class="section-link">View all &rarr;</a>
+      </div>
+
+      <div class="notes-grid">
+        <a href="#" class="card">
+          <div class="card-date">Today</div>
+          <div class="card-title">SvelteKit adapter-static gotchas</div>
+          <div class="card-snippet">The entries() export is crucial for prerendering dynamic routes. Without it, adapter-static won't know about your pages.</div>
+          <div class="card-tags">
+            <span class="tag">svelte</span>
+            <span class="tag">ssg</span>
+          </div>
+        </a>
+
+        <a href="#" class="card">
+          <div class="card-date">Today</div>
+          <div class="card-title">Nix flakes for dev environments</div>
+          <div class="card-snippet">Finally moved my dev setup to flakes. Reproducible across machines, no more "works on my machine".</div>
+          <div class="card-tags">
+            <span class="tag">nix</span>
+          </div>
+        </a>
+
+        <a href="#" class="card">
+          <div class="card-date">Yesterday</div>
+          <div class="card-title">Docker multi-stage builds for Rust</div>
+          <div class="card-snippet">Using cargo-chef for layer caching cuts rebuild times from 8min to under 1min.</div>
+          <div class="card-tags">
+            <span class="tag">docker</span>
+            <span class="tag">rust</span>
+          </div>
+        </a>
+
+        <a href="#" class="card">
+          <div class="card-date">Apr 7</div>
+          <div class="card-title">Rust serial port handling on Pi Zero</div>
+          <div class="card-snippet">The serialport crate works well, but baud rate needs to match the GPS module exactly or you get garbled output.</div>
+          <div class="card-tags">
+            <span class="tag">rust</span>
+            <span class="card-folder">projects/</span>
+          </div>
+        </a>
+
+        <a href="#" class="card">
+          <div class="card-date">Apr 6</div>
+          <div class="card-title">Rust ownership finally clicked</div>
+          <div class="card-snippet">Think of ownership like lending tools — you can lend a reference but only one person can modify at a time.</div>
+          <div class="card-tags">
+            <span class="tag">rust</span>
+          </div>
+        </a>
+
+        <a href="#" class="card">
+          <div class="card-date">Apr 3</div>
+          <div class="card-title">Unified/remark markdown pipeline</div>
+          <div class="card-snippet">The remark ecosystem is incredibly modular. Each plugin does one thing.</div>
+          <div class="card-tags">
+            <span class="tag">markdown</span>
+            <span class="tag">node</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Rides Shelf -->
+      <div class="section-header">
+        <div class="section-title">Ride journal</div>
+        <a href="#" class="section-link">All rides &rarr;</a>
+      </div>
+
+      <div class="rides-shelf">
+        <a href="#" class="ride-card">
+          <div class="ride-bike-badge badge-cb">CB350 Hness</div>
+          <div class="ride-title">Munnar Loop</div>
+          <div class="ride-meta">Apr 6 &middot; 340km &middot; 2 days</div>
+          <div class="ride-snippet">Took the CB350 through the hairpins. The low-end torque is perfect for hill roads.</div>
+        </a>
+
+        <a href="#" class="ride-card">
+          <div class="ride-bike-badge badge-ktm">KTM 390 ADV</div>
+          <div class="ride-title">Coorg Weekend</div>
+          <div class="ride-meta">Mar 28 &middot; 520km &middot; 3 days</div>
+          <div class="ride-snippet">Off-road sections through coffee plantations. The 390 ADV handles trails surprisingly well.</div>
+        </a>
+
+        <a href="#" class="ride-card">
+          <div class="ride-bike-badge badge-cb">CB350 Hness</div>
+          <div class="ride-title">Pondicherry Coastal</div>
+          <div class="ride-meta">Mar 15 &middot; 280km &middot; 1 day</div>
+          <div class="ride-snippet">Coastal road ride via Mahabalipuram. Easy cruise, great for the CB's relaxed character.</div>
+        </a>
+
+        <a href="#" class="ride-card">
+          <div class="ride-bike-badge badge-ktm">KTM 390 ADV</div>
+          <div class="ride-title">Hampi Trail Run</div>
+          <div class="ride-meta">Feb 20 &middot; 680km &middot; 3 days</div>
+          <div class="ride-snippet">Mixed terrain through Hampi's boulder landscape. Some proper off-road near the ruins.</div>
+        </a>
+      </div>
+
+      <!-- Active Projects -->
+      <div class="section-header">
+        <div class="section-title">Active projects</div>
+      </div>
+
+      <div class="projects-list">
+        <a href="#" class="project-item">
+          <div class="project-icon">&#128225;</div>
+          <div class="project-info">
+            <div class="project-name">GPS Ride Logger</div>
+            <div class="project-desc">Real-time GPS tracker for motorcycle rides &middot; Rust + Pi Zero</div>
+          </div>
+          <div class="project-updated">Updated today</div>
+        </a>
+        <a href="#" class="project-item">
+          <div class="project-icon">&#127760;</div>
+          <div class="project-info">
+            <div class="project-name">Home Server</div>
+            <div class="project-desc">Self-hosted services with Docker Compose</div>
+          </div>
+          <div class="project-updated">Apr 5</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
