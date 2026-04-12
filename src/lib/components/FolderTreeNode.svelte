@@ -5,7 +5,23 @@
 
 	let { node, depth = 0, onNavigate }: { node: FolderTreeEntry; depth?: number; onNavigate?: () => void } = $props();
 
+	function containsActive(entry: FolderTreeEntry, pathname: string): boolean {
+		if (!entry.isFolder) return entry.slug ? slugToHref(entry.slug) === pathname : false;
+		return entry.children?.some((c) => containsActive(c, pathname)) ?? false;
+	}
+
 	let expanded = $state(false);
+	let hasAutoExpanded = $state(false);
+
+	$effect(() => {
+		if (node.isFolder && containsActive(node, page.url.pathname)) {
+			expanded = true;
+			hasAutoExpanded = true;
+		} else if (hasAutoExpanded && !containsActive(node, page.url.pathname)) {
+			expanded = false;
+			hasAutoExpanded = false;
+		}
+	});
 </script>
 
 {#if node.isFolder}
