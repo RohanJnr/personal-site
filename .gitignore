@@ -22,6 +22,12 @@ Thumbs.db
 # Content (notes populated by CI from vault, rides committed manually)
 /content/notes
 
+# Design iterations
+/designs
+
+# Images (populated by CI from vault)
+/static/images
+
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
