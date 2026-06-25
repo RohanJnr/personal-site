@@ -21,8 +21,12 @@ fi
 echo "Copying images..."
 rm -rf "$PROJECT_DIR/static/images"
 mkdir -p "$PROJECT_DIR/static/images"
-cp -r ./obsidian-backup/Assets/Images/. "$PROJECT_DIR/static/images/"
+if [ -d "./obsidian-backup/Assets/Images" ]; then
+  cp -r ./obsidian-backup/Assets/Images/. "$PROJECT_DIR/static/images/"
+else
+  echo "No Assets/Images directory found in vault, skipping."
+fi
 
-NOTE_COUNT=$(find "$PROJECT_DIR/content/notes" -name '*.md' | wc -l)
+NOTE_COUNT=$(find "$PROJECT_DIR/content" -name '*.md' | wc -l)
 IMAGE_COUNT=$(find "$PROJECT_DIR/static/images" -type f | wc -l)
 echo "Done: $NOTE_COUNT notes, $IMAGE_COUNT images"
