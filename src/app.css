@@ -1,25 +1,93 @@
 /* =============================================
-   Hand-drawn theme — Layout A
+   Theme tokens — overridden by [data-theme]
    ============================================= */
 
+:root, [data-theme="paper"] {
+	--bg: #ffffff;
+	--bg-surface: #f7f7f7;
+	--bg-sidebar: #f7f7f7;
+	--text: #111111;
+	--text-muted: #6b7280;
+	--accent: #ff6600;
+	--accent-hover: #e55a00;
+	--accent-light: rgba(255, 102, 0, 0.08);
+	--heading: #111111;
+	--border: rgba(0, 0, 0, 0.08);
+	--border-strong: rgba(0, 0, 0, 0.16);
+	--code-bg: #1a1a1a;
+	--code-fg: #e8e8e8;
+}
+
+[data-theme="obsidian"] {
+	--bg: #1a1b1e;
+	--bg-surface: #222327;
+	--bg-sidebar: #16171a;
+	--text: #d4d0c8;
+	--text-muted: #6b6960;
+	--accent: #c9a96e;
+	--accent-hover: #d4b87e;
+	--accent-light: rgba(201, 169, 110, 0.1);
+	--heading: #e8e4d8;
+	--border: rgba(255, 255, 255, 0.06);
+	--border-strong: rgba(255, 255, 255, 0.12);
+	--code-bg: #111214;
+	--code-fg: #d4d0c8;
+}
+
+[data-theme="forest"] {
+	--bg: #f4f1eb;
+	--bg-surface: #ede9e0;
+	--bg-sidebar: #e8e3d8;
+	--text: #2c2a24;
+	--text-muted: #7a7060;
+	--accent: #4a7c59;
+	--accent-hover: #5a9068;
+	--accent-light: rgba(74, 124, 89, 0.09);
+	--heading: #1e1d18;
+	--border: rgba(44, 42, 36, 0.1);
+	--border-strong: rgba(44, 42, 36, 0.2);
+	--code-bg: #1a1f1c;
+	--code-fg: #c8d8c0;
+}
+
+[data-theme="slate"] {
+	--bg: #0d1117;
+	--bg-surface: #161b22;
+	--bg-sidebar: #0d1117;
+	--text: #c9d1d9;
+	--text-muted: #6e7681;
+	--accent: #ff6600;
+	--accent-hover: #e55a00;
+	--accent-light: rgba(255, 102, 0, 0.1);
+	--heading: #f0f6fc;
+	--border: rgba(240, 246, 252, 0.07);
+	--border-strong: rgba(240, 246, 252, 0.14);
+	--code-bg: #0d1117;
+	--code-fg: #c9d1d9;
+}
+
+[data-theme="rose"] {
+	--bg: #fdf6f0;
+	--bg-surface: #f8ede4;
+	--bg-sidebar: #f4e6da;
+	--text: #2d1f1a;
+	--text-muted: #9a7060;
+	--accent: #b5401f;
+	--accent-hover: #cc4f28;
+	--accent-light: rgba(181, 64, 31, 0.08);
+	--heading: #1f110d;
+	--border: rgba(45, 31, 26, 0.1);
+	--border-strong: rgba(45, 31, 26, 0.2);
+	--code-bg: #1a1008;
+	--code-fg: #e8d8c8;
+}
+
 :root {
-	--bg: #faf8f4;
-	--bg-surface: #f5f0e8;
-	--bg-sidebar: #f0ebe2;
-	--text: #2d2a26;
-	--text-muted: #7a7468;
-	--accent: #d45a28;
-	--accent-hover: #e06830;
-	--accent-light: #f8e8df;
-	--heading: #1a1816;
-	--border: #d4cbbe;
-	--border-strong: #b8a898;
+	--font-body: 'Inter', system-ui, sans-serif;
+	--font-display: 'DM Serif Display', Georgia, serif;
+	--font-mono: 'JetBrains Mono', monospace;
 
-	--font-body: 'Inter', -apple-system, sans-serif;
-	--font-display: 'Playfair Display', Georgia, serif;
-	--font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-
-	--sidebar-width: 250px;
+	--sidebar-width: 280px;
 }
 
 *, *::before, *::after {
@@ -57,26 +125,27 @@ a {
 .note-content h1 {
 	font-family: var(--font-display);
 	font-size: 2rem;
-	font-weight: 900;
+	font-weight: 600;
 	color: var(--heading);
 	margin: 0 0 0.25em;
 	line-height: 1.2;
+	letter-spacing: -0.3px;
 }
 
 .note-content h2 {
 	font-family: var(--font-display);
 	font-size: 1.5rem;
-	font-weight: 700;
+	font-weight: 600;
 	color: var(--heading);
 	margin: 2em 0 0.5em;
 	padding-bottom: 0.25em;
-	border-bottom: 2px dashed var(--border);
+	border-bottom: 1px solid var(--border);
 }
 
 .note-content h3 {
 	font-family: var(--font-display);
 	font-size: 1.2rem;
-	font-weight: 700;
+	font-weight: 600;
 	color: var(--heading);
 	margin: 1.5em 0 0.4em;
 }
@@ -127,13 +196,12 @@ a {
 }
 
 .note-content pre {
-	background: var(--heading);
-	color: #e8e0d4;
+	background: var(--code-bg);
+	color: var(--code-fg);
 	padding: 1.25em 1.5em;
 	border-radius: 6px;
 	overflow-x: auto;
 	margin: 1.25em 0;
-	transform: rotate(-0.15deg);
 }
 
 .note-content pre code {
@@ -146,7 +214,7 @@ a {
 
 .note-content hr {
 	border: none;
-	border-top: 2px dashed var(--border);
+	border-top: 1px solid var(--border);
 	margin: 2em 0;
 }
 
@@ -188,19 +256,19 @@ a {
 	padding: 1em 1.25em;
 	margin: 1.25em 0;
 	border-radius: 4px;
-	border: 1.5px solid var(--border);
-	border-left: 4px solid var(--accent);
-	background: #fff;
-	transform: rotate(0.15deg);
+	border: 1px solid var(--border);
+	border-left: 3px solid var(--accent);
+	background: var(--bg-surface);
 }
 
 .callout-title {
-	font-family: var(--font-display);
-	font-size: 1.1rem;
-	font-weight: 700;
+	font-family: var(--font-body);
+	font-size: 0.85rem;
+	font-weight: 600;
 	color: var(--accent);
 	margin-bottom: 0.4em;
-	text-transform: capitalize;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
 }
 
 .callout-info    { border-left-color: #4a7fbf; }

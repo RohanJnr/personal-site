@@ -45,36 +45,34 @@
 	.note-header {
 		margin-bottom: 2em;
 		padding-bottom: 1.25em;
-		border-bottom: 2px dashed var(--border);
+		border-bottom: 1px solid var(--border);
 	}
 
 	.note-meta {
 		display: flex;
 		gap: 12px;
-		font-size: 12px;
+		font-family: var(--font-body);
+		font-size: 11px;
 		color: var(--text-muted);
 		margin-bottom: 8px;
 	}
 
 	.note-folder {
-		background: var(--accent-light);
-		color: var(--accent);
-		padding: 1px 8px;
-		border-radius: 3px;
-		transition: color 0.15s, background 0.15s;
+		color: var(--text-muted);
+		transition: color 0.15s;
 	}
 
 	.note-folder:hover {
-		background: var(--accent);
-		color: #fff;
+		color: var(--accent);
 	}
 
 	h1 {
 		font-family: var(--font-display);
 		font-size: 2.2rem;
-		font-weight: 700;
+		font-weight: 500;
 		color: var(--heading);
 		line-height: 1.2;
+		letter-spacing: -0.3px;
 		margin-bottom: 10px;
 	}
 

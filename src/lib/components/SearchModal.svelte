@@ -132,11 +132,11 @@
 
 	.modal {
 		background: #fff;
-		border: 2px solid var(--border);
-		border-radius: 10px;
+		border: 1px solid var(--border);
+		border-radius: 8px;
 		width: 560px;
 		max-width: 92vw;
-		box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+		box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
 		overflow: hidden;
 	}
 

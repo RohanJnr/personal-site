@@ -8,11 +8,15 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 echo "Copying notes..."
-rm -rf "$PROJECT_DIR/content/notes"
-mkdir -p "$PROJECT_DIR/content/notes"
-cp -r ./obsidian-backup/Notes/. "$PROJECT_DIR/content/notes/"
+rm -rf "$PROJECT_DIR/content"
+mkdir -p "$PROJECT_DIR/content"
+cp -r ./obsidian-backup/Notes/. "$PROJECT_DIR/content/"
 
-# content/rides/ is committed to the site repo, not touched here
+# Rides live in the vault too — copy them into content/rides/
+if [ -d "./obsidian-backup/Rides" ]; then
+  mkdir -p "$PROJECT_DIR/content/rides"
+  cp -r ./obsidian-backup/Rides/. "$PROJECT_DIR/content/rides/"
+fi
 
 echo "Copying images..."
 rm -rf "$PROJECT_DIR/static/images"

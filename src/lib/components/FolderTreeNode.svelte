@@ -73,10 +73,10 @@
 		background: none;
 		border: none;
 		cursor: pointer;
-		font-family: inherit;
-		font-size: 13px;
-		font-weight: 600;
-		color: var(--text-muted);
+		font-family: var(--font-body);
+		font-size: 13.5px;
+		font-weight: 500;
+		color: var(--text);
 		border-radius: 5px;
 		text-align: left;
 		transition: color 0.15s, background 0.15s;
@@ -84,7 +84,7 @@
 
 	.folder-name:hover {
 		color: var(--text);
-		background: rgba(0, 0, 0, 0.03);
+		background: rgba(20, 22, 27, 0.04);
 	}
 
 	.folder-arrow {

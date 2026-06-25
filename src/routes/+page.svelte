@@ -1,62 +1,95 @@
 <script lang="ts">
-	import TabNav from '$lib/components/TabNav.svelte';
 	import { slugToHref } from '$lib/utils.js';
 	import type { PageData } from './$types.js';
 
 	let { data }: { data: PageData } = $props();
 
-	let activeFolder = $state<string | null>(null);
+	let lightboxOpen = $state(false);
 
-	const filtered = $derived(
-		activeFolder ? data.notes.filter((n) => n.folder === activeFolder) : data.notes
-	);
+	function onKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape') lightboxOpen = false;
+	}
+
+	const TALKS = [
+		{ title: 'What Lies Beneath PostgreSQL: The Mechanics of Writes and Vacuum', event: 'Rootconf', location: 'Bengaluru', date: '2025', kind: 'Talk', href: 'https://hasgeek.com/rootconf/2025/sub/what-lies-beneath-postgresql-the-mechanics-of-writ-6AbqZBcAmAo5G8avq6ErJB' },
+		{ title: 'Hands-On Guide to Building a RAG Chatbot', event: 'Javafest', location: 'Online', date: '2024', kind: 'Talk', href: 'https://javafest.org/sessions/building-rag-chatbot/' },
+		{ title: 'Python Sockets at Scale: I/O Multiplexing and Asyncio', event: 'PyCon India', location: 'Bengaluru', date: '2025', kind: 'Talk', href: 'https://youtu.be/qDGI5G-C6AQ?si=KqaH94Pipo-9Q6Ls' },
+	];
+
+	const RECENT_NOTES = data.notes.slice(0, 5);
+	const RECENT_RIDES = data.rides.slice(0, 3);
 </script>
 
+<svelte:window onkeydown={onKeydown} />
+
 <svelte:head>
-	<title>Rohan's Notes</title>
-	<meta name="description" content="Notes on software engineering, databases, distributed systems, and more." />
-	<meta property="og:title" content="Rohan's Notes" />
-	<meta property="og:description" content="Notes on software engineering, databases, distributed systems, and more." />
+	<title>Rohan Alleti</title>
+	<meta name="description" content="Software engineer working on backend, cloud, and applied Gen-AI systems(RAG, Agentic, etc). Writing notes on things I wish I'd known earlier." />
+	<meta property="og:title" content="Rohan Alleti" />
+	<meta property="og:description" content="Software engineer working on backend, cloud, and RAG systems." />
 	<meta property="og:type" content="website" />
-	<meta property="og:site_name" content="Rohan's Notes" />
 </svelte:head>
 
-<!-- About -->
-<section class="about">
-	<h1>Rohan Reddy Alleti</h1>
-	<p>
-		Software engineer at <a href="https://sahaj.ai" target="_blank" rel="noopener">Sahaj Software</a>,
-		working on backend development, cloud, and RAG systems. I enjoy diving deep into how things work —
-		especially the interaction between hardware and software.
-	</p>
-	<p>
-		Off work: long rides on my motorcycle, badminton, and the occasional raid in Sea of Thieves.
-		You can find me on <a href="https://www.linkedin.com/in/rohanalleti" target="_blank" rel="noopener">LinkedIn</a>
-		or <a href="https://x.com/RohanJnr45" target="_blank" rel="noopener">Twitter</a>.
-	</p>
+<!-- Hero -->
+<section class="hero">
+	<div class="hero-text">
+		<p class="greeting">Hey, I'm Rohan —</p>
+		<h1>
+			software engineer, note-taker,<br>
+			and <em>motorcycle rider.</em>
+		</h1>
+		<p class="bio">
+			I work at <a href="https://sahaj.ai" target="_blank" rel="noopener">Sahaj Software</a> on backend systems,
+			cloud infrastructure, and applied Gen-AI systems(RAG, Agentic, etc). I write notes when I learn something I wish I'd known earlier.
+			Off the keyboard: long rides, badminton, and the occasional Sea of Thieves raid.
+		</p>
+		<a href="https://linkedin.com/in/rohan-alleti" target="_blank" rel="noopener" class="linkedin-link">
+			LinkedIn
+			<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M2 10L10 2M10 2H4M10 2v6"/>
+			</svg>
+		</a>
+	</div>
+	<div class="hero-img-slot">
+		<button class="img-btn" onclick={() => (lightboxOpen = true)} aria-label="View full size">
+			<img src="/bike.jpg" alt="My motorcycle" />
+		</button>
+	</div>
+
+{#if lightboxOpen}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<div class="lightbox-backdrop" onclick={() => (lightboxOpen = false)} role="dialog" aria-modal="true">
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<div class="lightbox-card" onclick={(e) => e.stopPropagation()}>
+			<button class="lightbox-close" onclick={() => (lightboxOpen = false)} aria-label="Close">✕</button>
+			<img src="/bike.jpg" alt="My motorcycle" />
+		</div>
+	</div>
+{/if}
 </section>
 
 <!-- Recent Notes -->
-<section class="notes-section">
-	<h2 class="section-heading">Notes</h2>
-
-	<TabNav
-		folders={data.folders}
-		totalCount={data.notes.length}
-		{activeFolder}
-		onSelect={(f) => (activeFolder = f)}
-	/>
-
-	<ul class="notes-list">
-		{#each filtered.slice(0, 30) as note}
+<section class="section">
+	<div class="section-header">
+		<h2 class="section-title">Recent notes</h2>
+		<a href="/notes" class="section-link">all {data.notes.length} →</a>
+	</div>
+	<ul class="note-list">
+		{#each RECENT_NOTES as note}
 			<li>
 				<a href={slugToHref(note.slug)} class="note-row">
-					<span class="note-title">{note.title}</span>
-					<span class="note-right">
-						<span class="note-folder">{note.folder}</span>
-						<span class="note-date">
-							{new Date(note.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-						</span>
+					<span class="note-date">
+						{new Date(note.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+					</span>
+					<span class="note-body">
+						<span class="note-title">{note.title}</span>
+						{#if note.tags.length > 0}
+							<span class="note-tags">
+								{#each note.tags.slice(0, 3) as tag}
+									<span class="tag">#{tag}</span>
+								{/each}
+							</span>
+						{/if}
 					</span>
 				</a>
 			</li>
@@ -64,244 +97,379 @@
 	</ul>
 </section>
 
-<!-- Conference appearances -->
-<section class="conferences">
-	<h2 class="section-heading">Talks</h2>
-	<ul class="conf-list">
-		<li class="conf-item">
-			<div class="conf-meta">
-				<span class="conf-event">Rootconf 2025</span>
-				<span class="conf-year">2025</span>
-			</div>
-			<a
-				class="conf-title"
-				href="https://hasgeek.com/rootconf/2025/sub/what-lies-beneath-postgresql-the-mechanics-of-writ-6AbqZBcAmAo5G8avq6ErJB"
-				target="_blank"
-				rel="noopener"
-			>
-				What Lies Beneath PostgreSQL: The Mechanics of Writes and Vacuum
-			</a>
-			<a class="conf-recording" href="https://vimeo.com/1084704677?share=copy#t=13210.89" target="_blank" rel="noopener">
-				Watch recording →
-			</a>
-		</li>
-		<li class="conf-item">
-			<div class="conf-meta">
-				<span class="conf-event">Javafest 2024</span>
-				<span class="conf-year">2024</span>
-			</div>
-			<a
-				class="conf-title"
-				href="https://javafest.org/sessions/building-rag-chatbot/"
-				target="_blank"
-				rel="noopener"
-			>
-				Hands-On Guide to Building a RAG Chatbot
-			</a>
-			<a class="conf-recording" href="https://youtu.be/yH79W2kI0KE?si=bQAJv7bizS6kNxMn&t=520" target="_blank" rel="noopener">
-				Watch recording →
-			</a>
-		</li>
-		<li class="conf-item">
-			<div class="conf-meta">
-				<span class="conf-event">PyCon India 2025 — Bengaluru</span>
-				<span class="conf-year">2025</span>
-			</div>
-			<a
-				class="conf-title"
-				href="https://youtu.be/qDGI5G-C6AQ?si=KqaH94Pipo-9Q6Ls"
-				target="_blank"
-				rel="noopener"
-			>
-				Python Sockets at Scale: I/O Multiplexing and Asyncio
-			</a>
-			<a class="conf-recording" href="https://youtu.be/qDGI5G-C6AQ?si=KqaH94Pipo-9Q6Ls" target="_blank" rel="noopener">
-				Watch recording →
-			</a>
-		</li>
+<!-- Recent Rides -->
+{#if RECENT_RIDES.length > 0}
+<section class="section">
+	<div class="section-header">
+		<h2 class="section-title">Recent rides</h2>
+		<a href="/motorcycling" class="section-link">all →</a>
+	</div>
+	<ul class="note-list">
+		{#each RECENT_RIDES as ride}
+			<li>
+				<a href={slugToHref(ride.slug)} class="note-row">
+					<span class="note-date">
+						{new Date(ride.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+					</span>
+					<span class="note-body">
+						<span class="note-title">{ride.title}</span>
+					</span>
+				</a>
+			</li>
+		{/each}
 	</ul>
+</section>
+{/if}
+
+<!-- Talks -->
+<section class="section">
+	<div class="section-header">
+		<h2 class="section-title">Talks</h2>
+	</div>
+	<div class="talks-list">
+		{#each TALKS as talk}
+			<a href={talk.href} target="_blank" rel="noopener" class="talk-item">
+				<span class="talk-year">{talk.date}</span>
+				<span class="talk-body">
+					<span class="talk-title">{talk.title}</span>
+					<span class="talk-meta">{talk.event} · {talk.location}</span>
+				</span>
+			</a>
+		{/each}
+	</div>
 </section>
 
 <style>
-	/* About */
-	.about {
-		margin-bottom: 48px;
-		padding-bottom: 28px;
-		border-bottom: 2px dashed var(--border);
+	/* Hero */
+	.hero {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 40px;
+		align-items: start;
+		padding-bottom: 56px;
+		border-bottom: 1px solid var(--border);
+		margin-bottom: 56px;
 	}
 
-	.about h1 {
+	.greeting {
+		font-family: var(--font-body);
+		font-size: 12px;
+		color: var(--text-muted);
+		letter-spacing: 0.5px;
+		margin-bottom: 14px;
+	}
+
+	h1 {
 		font-family: var(--font-display);
-		font-size: 2rem;
-		font-weight: 700;
+		font-size: 2.2rem;
+		font-weight: 500;
+		line-height: 1.2;
 		color: var(--heading);
-		margin-bottom: 12px;
+		margin: 0 0 20px;
+		letter-spacing: -0.4px;
 	}
 
-	.about p {
+	h1 em {
+		font-style: italic;
+		color: var(--accent);
+	}
+
+	.bio {
+		font-size: 15px;
+		line-height: 1.7;
+		color: var(--text-muted);
+		max-width: 520px;
+		margin: 0 0 20px;
+	}
+
+	.bio a {
+		color: var(--text);
+		border-bottom: 1px solid var(--border-strong);
+		transition: color 0.12s, border-color 0.12s;
+	}
+
+	.bio a:hover {
+		color: var(--accent);
+		border-bottom-color: var(--accent);
+	}
+
+	.linkedin-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 5px;
 		font-size: 14px;
 		color: var(--text-muted);
-		line-height: 1.8;
-		max-width: 560px;
-		margin-bottom: 8px;
+		transition: color 0.12s;
 	}
 
-	.about a {
+	.linkedin-link:hover {
 		color: var(--accent);
-		border-bottom: 1px dashed var(--accent);
 	}
 
-	.about a:hover {
-		border-bottom-style: solid;
+	.hero-img-slot {
+		width: 200px;
+		height: 200px;
+		border-radius: 10px;
+		overflow: hidden;
+		flex-shrink: 0;
 	}
 
-	/* Section heading */
-	.section-heading {
-		font-family: var(--font-display);
-		font-size: 1.3rem;
-		font-weight: 700;
-		color: var(--heading);
-		margin-bottom: 16px;
+	.img-btn {
+		display: block;
+		width: 100%;
+		height: 100%;
+		padding: 0;
+		border: none;
+		background: none;
+		cursor: zoom-in;
 	}
 
-	/* Notes */
-	.notes-section {
-		margin-bottom: 48px;
+	.hero-img-slot img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center;
+		display: block;
+		transition: opacity 0.15s;
 	}
 
-	.notes-list {
-		list-style: none;
+	.img-btn:hover img {
+		opacity: 0.9;
+	}
+
+	/* Lightbox */
+	.lightbox-backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 100;
+		background: rgba(0, 0, 0, 0.5);
 		display: flex;
-		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 40px;
+		animation: fade-in 0.18s ease;
 	}
 
-	.notes-list li + li {
-		border-top: 1px solid rgba(0, 0, 0, 0.04);
+	.lightbox-card {
+		position: relative;
+		border-radius: 12px;
+		overflow: hidden;
+		box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+		max-width: 80vw;
+		max-height: 80vh;
+		animation: pop-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+
+	.lightbox-card img {
+		display: block;
+		max-width: 80vw;
+		max-height: 80vh;
+		object-fit: contain;
+	}
+
+	.lightbox-close {
+		position: absolute;
+		top: 12px;
+		right: 12px;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background: rgba(0, 0, 0, 0.55);
+		border: none;
+		color: #fff;
+		font-size: 14px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: background 0.15s;
+		line-height: 1;
+	}
+
+	.lightbox-close:hover {
+		background: rgba(0, 0, 0, 0.8);
+	}
+
+	@keyframes fade-in {
+		from { opacity: 0; }
+		to   { opacity: 1; }
+	}
+
+	@keyframes pop-in {
+		from { opacity: 0; transform: scale(0.88); }
+		to   { opacity: 1; transform: scale(1); }
+	}
+
+	/* Sections */
+	.section {
+		margin-bottom: 36px;
+	}
+
+	.section-header {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		padding-bottom: 6px;
+		border-bottom: 1px solid var(--border);
+		margin-bottom: 0;
+	}
+
+	.section-title {
+		font-family: var(--font-body);
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--heading);
+		margin: 0;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+
+	.section-link {
+		font-family: var(--font-body);
+		font-size: 11px;
+		color: var(--text-muted);
+		transition: color 0.12s;
+	}
+
+	.section-link:hover {
+		color: var(--accent);
+	}
+
+	/* Note list */
+	.note-list {
+		list-style: none;
 	}
 
 	.note-row {
 		display: flex;
 		align-items: baseline;
-		justify-content: space-between;
 		gap: 12px;
-		padding: 9px 10px;
-		margin: 0 -10px;
-		border-radius: 6px;
-		transition: background 0.12s;
+		padding: 7px 0;
+		border-bottom: 1px solid var(--border);
 	}
 
-	.note-row:hover {
-		background: #fff;
+	.note-list li:last-child .note-row {
+		border-bottom: none;
+	}
+
+	.note-date {
+		font-size: 11px;
+		color: var(--text-muted);
+		flex-shrink: 0;
+		width: 44px;
+	}
+
+	.note-body {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+		flex: 1;
+		min-width: 0;
+	}
+
+	.note-title {
+		font-size: 14px;
+		color: var(--heading);
+		line-height: 1.4;
+		transition: color 0.12s;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.note-row:hover .note-title {
 		color: var(--accent);
 	}
 
-	.note-title {
-		font-size: 14px;
-		font-weight: 500;
-		color: var(--heading);
-		min-width: 0;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		transition: color 0.12s;
-	}
-
-	.note-right {
+	.note-tags {
 		display: flex;
-		align-items: center;
-		gap: 10px;
+		gap: 4px;
 		flex-shrink: 0;
 	}
 
-	.note-folder {
+	.tag {
+		font-size: 10px;
+		color: var(--text-muted);
+	}
+
+	/* Talks */
+	.talks-list {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.talk-item {
+		display: flex;
+		align-items: baseline;
+		gap: 12px;
+		padding: 7px 0;
+		border-bottom: 1px solid var(--border);
+	}
+
+	.talks-list .talk-item:last-child {
+		border-bottom: none;
+	}
+
+	.talk-year {
 		font-size: 11px;
-		background: var(--bg-surface);
-		padding: 1px 6px;
-		border-radius: 3px;
 		color: var(--text-muted);
+		flex-shrink: 0;
+		width: 36px;
 	}
 
-	.note-date {
-		font-size: 12px;
-		color: var(--text-muted);
-		white-space: nowrap;
-	}
-
-	/* Conferences */
-	.conferences {
-		padding-top: 4px;
-	}
-
-	.conf-list {
-		list-style: none;
+	.talk-body {
 		display: flex;
-		flex-direction: column;
-		gap: 20px;
-	}
-
-	.conf-item {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
-
-	.conf-meta {
-		display: flex;
-		align-items: center;
+		align-items: baseline;
 		gap: 10px;
+		flex: 1;
+		min-width: 0;
 	}
 
-	.conf-event {
-		font-size: 11px;
-		font-weight: 600;
-		color: var(--accent);
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-	}
-
-	.conf-year {
-		font-size: 11px;
-		color: var(--text-muted);
-	}
-
-	.conf-title {
+	.talk-title {
 		font-size: 14px;
-		font-weight: 500;
 		color: var(--heading);
+		line-height: 1.4;
 		transition: color 0.12s;
-		width: fit-content;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
-	.conf-title:hover {
+	.talk-item:hover .talk-title {
 		color: var(--accent);
 	}
 
-	.conf-recording {
+	.talk-meta {
 		font-size: 12px;
-		color: var(--accent);
-		width: fit-content;
+		flex-shrink: 0;
+		color: var(--text-muted);
+		font-style: italic;
 	}
 
-	.conf-recording:hover {
-		text-decoration: underline;
-	}
-
-	@media (max-width: 768px) {
-		.about h1 {
-			font-size: 1.5rem;
+	@media (max-width: 640px) {
+		.hero {
+			grid-template-columns: 1fr;
+			padding-bottom: 40px;
+			margin-bottom: 40px;
 		}
 
-		.note-row {
-			flex-direction: column;
+		.hero-img-slot {
+			display: none;
+		}
+
+		h1 {
+			font-size: 1.7rem;
+		}
+
+		.note-row,
+		.talk-item {
+			grid-template-columns: 1fr;
 			gap: 4px;
-			align-items: flex-start;
 		}
 
-		.note-right {
-			padding-left: 0;
+		.note-date,
+		.talk-year {
+			display: none;
 		}
 	}
 </style>

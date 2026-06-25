@@ -9,4 +9,5 @@ export const EXCLUDE_PATTERNS = [
 	/^Templates/,
 	/^Excalidraw/,
 	/^Assets\/Excalidraw/,
+	/^index\.md$/,
 ];

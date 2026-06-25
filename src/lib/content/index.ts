@@ -5,8 +5,7 @@ import { processMarkdown } from './markdown.js';
 import { EXCLUDE_PATTERNS } from '$lib/config.js';
 import type { NoteMetadata, Note, FolderTreeEntry } from '$lib/types.js';
 
-const CONTENT_DIR = process.env.CONTENT_DIR ?? path.resolve('content/notes');
-const RIDES_DIR = path.resolve('content/rides');
+const CONTENT_DIR = process.env.CONTENT_DIR ?? path.resolve('content');
 
 // ── Slug helpers ──────────────────────────────────────────────────────────────
 
@@ -42,14 +41,7 @@ function walkDir(dir: string, baseDir: string): string[] {
 }
 
 function walkAllDirs(): { filePath: string; baseDir: string }[] {
-	const results: { filePath: string; baseDir: string }[] = [];
-	for (const f of walkDir(CONTENT_DIR, CONTENT_DIR)) {
-		results.push({ filePath: f, baseDir: CONTENT_DIR });
-	}
-	for (const f of walkDir(RIDES_DIR, RIDES_DIR)) {
-		results.push({ filePath: f, baseDir: RIDES_DIR });
-	}
-	return results;
+	return walkDir(CONTENT_DIR, CONTENT_DIR).map((filePath) => ({ filePath, baseDir: CONTENT_DIR }));
 }
 
 // ── Date extraction ───────────────────────────────────────────────────────────
@@ -94,10 +86,10 @@ function extractTags(frontmatter: Record<string, unknown>, relPath: string, cont
 		}
 	}
 
-	// Top-level folder as implicit tag
-	const topFolder = relPath.split(path.sep)[0];
-	if (topFolder && !tags.includes(topFolder)) {
-		tags.push(topFolder);
+	// Top-level folder as implicit tag (only if file is inside a subfolder)
+	const parts = relPath.split(path.sep);
+	if (parts.length > 1 && !tags.includes(parts[0])) {
+		tags.push(parts[0]);
 	}
 
 	return tags;
@@ -139,7 +131,7 @@ export function getAllNotes(): NoteMetadata[] {
 			title: extractTitle(data, filePath),
 			date: extractDate(data, filePath),
 			tags: extractTags(data, relPath, content),
-			folder: relPath.split(path.sep)[0],
+			folder: relPath.includes(path.sep) ? relPath.split(path.sep)[0] : '/',
 			filePath
 		};
 	});
@@ -155,16 +147,9 @@ export function getAllNotes(): NoteMetadata[] {
 export async function getNoteBySlug(slug: string): Promise<Note | null> {
 	const relPath = slugToPath(slug);
 
-	let filePath: string | null = null;
-	let baseDir: string = CONTENT_DIR;
-	for (const dir of [CONTENT_DIR, RIDES_DIR]) {
-		const candidate = path.join(dir, relPath);
-		if (fs.existsSync(candidate)) {
-			filePath = candidate;
-			baseDir = dir;
-			break;
-		}
-	}
+	const candidate = path.join(CONTENT_DIR, relPath);
+	const filePath: string | null = fs.existsSync(candidate) ? candidate : null;
+	const baseDir = CONTENT_DIR;
 
 	if (!filePath) return null;
 

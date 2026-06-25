@@ -15,7 +15,6 @@
 </svelte:head>
 
 <div class="tag-header">
-	<a href="/" class="back">← Home</a>
 	<h1><span class="tag-mark">#</span>{data.tag}</h1>
 	<p class="count">{data.notes.length} note{data.notes.length === 1 ? '' : 's'}</p>
 </div>
@@ -40,18 +39,8 @@
 	.tag-header {
 		margin-bottom: 28px;
 		padding-bottom: 20px;
-		border-bottom: 2px dashed var(--border);
+		border-bottom: 1px solid var(--border);
 	}
-
-	.back {
-		font-size: 13px;
-		color: var(--text-muted);
-		display: inline-block;
-		margin-bottom: 12px;
-		transition: color 0.15s;
-	}
-
-	.back:hover { color: var(--accent); }
 
 	h1 {
 		font-family: var(--font-display);
